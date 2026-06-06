@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Temporarily Library until App.xaml provides an entry point (Task 11 flips
+         this back to WinExe). Lets the shared layer + tests build during Phase A. -->
+    <OutputType>Library</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>OKXMonitor</AssemblyName>
+    <RootNamespace>OKXMonitor</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- A tiny always-on-top widget; no need for the default WPF window chrome. -->
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Windows Credential Manager wrapper (DPAPI-backed). See docs/WINDOWS_PORT.md §6. -->
+    <PackageReference Include="Meziantou.Framework.Win32.CredentialManager" Version="1.4.5" />
+  </ItemGroup>
+
+</Project>
