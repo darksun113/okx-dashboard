@@ -38,6 +38,7 @@
                     </Border>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,12,8">
+                    <Button x:Name="ToggleBtn" Content="⤢" Click="Toggle_Click" Style="{StaticResource Chrome}"/>
                     <Button x:Name="RefreshBtn" Content="⟳" Click="Refresh_Click" Style="{StaticResource Chrome}"/>
                     <Button x:Name="SettingsBtn" Content="⚙" Click="Settings_Click" Style="{StaticResource Chrome}"/>
                     <Button x:Name="CloseBtn" Content="✕" Click="Close_Click" Style="{StaticResource Chrome}"/>
