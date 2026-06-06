@@ -74,7 +74,7 @@ public partial class PortraitView : UserControl
     {
         var tb = new TextBlock
         {
-            Text = text, Foreground = color, FontSize = mono ? 10 : 11,
+            Text = text, Foreground = color, FontSize = mono ? 12 : 13,
             TextAlignment = col == 0 ? TextAlignment.Left : TextAlignment.Right,
             FontFamily = mono ? new FontFamily("Consolas") : new FontFamily("Segoe UI"),
         };
@@ -96,7 +96,7 @@ public partial class PortraitView : UserControl
         PositionsPanel.Children.Clear();
         if (_store!.Positions.Count == 0)
         {
-            PositionsPanel.Children.Add(new TextBlock { Text = "无持仓", Foreground = Gray, FontSize = 11 });
+            PositionsPanel.Children.Add(new TextBlock { Text = "无持仓", Foreground = Gray, FontSize = 13 });
             return;
         }
         foreach (var p in _store.Positions)
@@ -111,21 +111,21 @@ public partial class PortraitView : UserControl
 
         var top = new DockPanel { Margin = new Thickness(0, 0, 0, 2) };
         var left = new StackPanel { Orientation = Orientation.Horizontal };
-        left.Children.Add(new TextBlock { Text = Format.Symbol(p.InstId), FontWeight = FontWeights.SemiBold, FontSize = 12 });
+        left.Children.Add(new TextBlock { Text = Format.Symbol(p.InstId), FontWeight = FontWeights.SemiBold, FontSize = 14 });
         left.Children.Add(SideTag(p.PosSide));
         if (!string.IsNullOrEmpty(p.Lever))
-            left.Children.Add(new TextBlock { Text = $" {p.Lever}x", Foreground = Gray, FontSize = 10, VerticalAlignment = VerticalAlignment.Center });
+            left.Children.Add(new TextBlock { Text = $" {p.Lever}x", Foreground = Gray, FontSize = 12, VerticalAlignment = VerticalAlignment.Center });
         DockPanel.SetDock(left, Dock.Left);
         top.Children.Add(left);
         top.Children.Add(new TextBlock
         {
-            Text = Format.SignedMoney(upl), Foreground = PnlColor(upl), FontSize = 12,
+            Text = Format.SignedMoney(upl), Foreground = PnlColor(upl), FontSize = 14,
             FontWeight = FontWeights.SemiBold, HorizontalAlignment = HorizontalAlignment.Right,
         });
 
         var detail = new TextBlock
         {
-            FontSize = 10, Foreground = Gray, FontFamily = new FontFamily("Consolas"),
+            FontSize = 12, Foreground = Gray, FontFamily = new FontFamily("Consolas"),
             Text = $"数量 {p.Pos ?? "-"}  开仓 {Format.TrimNum(p.AvgPx)}  标记 {Format.TrimNum(p.MarkPx)}  {Format.Percent(ratio * 100, true)}",
         };
 
@@ -134,7 +134,7 @@ public partial class PortraitView : UserControl
         box.Children.Add(detail);
         if (double.TryParse(p.LiqPx, System.Globalization.NumberStyles.Any,
             System.Globalization.CultureInfo.InvariantCulture, out var liq) && liq > 0)
-            box.Children.Add(new TextBlock { Text = "强平价 " + Format.TrimNum(p.LiqPx), Foreground = Orange, FontSize = 10, FontFamily = new FontFamily("Consolas") });
+            box.Children.Add(new TextBlock { Text = "强平价 " + Format.TrimNum(p.LiqPx), Foreground = Orange, FontSize = 12, FontFamily = new FontFamily("Consolas") });
 
         return new Border { Background = new SolidColorBrush(Color.FromArgb(0x0A, 0xFF, 0xFF, 0xFF)),
             CornerRadius = new CornerRadius(6), Padding = new Thickness(8), Margin = new Thickness(0, 0, 0, 4), Child = box };
@@ -142,15 +142,15 @@ public partial class PortraitView : UserControl
 
     UIElement OrderRow(PendingOrder o)
     {
-        var dp = new DockPanel { Height = 18 };
+        var dp = new DockPanel { Height = 22 };
         var left = new StackPanel { Orientation = Orientation.Horizontal };
-        left.Children.Add(new TextBlock { Text = Format.Symbol(o.InstId), FontSize = 11, FontWeight = FontWeights.Medium });
+        left.Children.Add(new TextBlock { Text = Format.Symbol(o.InstId), FontSize = 13, FontWeight = FontWeights.Medium });
         left.Children.Add(SideTag(o.PosSide ?? o.Side));
         DockPanel.SetDock(left, Dock.Left);
         dp.Children.Add(left);
         dp.Children.Add(new TextBlock
         {
-            HorizontalAlignment = HorizontalAlignment.Right, FontSize = 11, Foreground = Gray,
+            HorizontalAlignment = HorizontalAlignment.Right, FontSize = 13, Foreground = Gray,
             FontFamily = new FontFamily("Consolas"), Text = $"{Format.TrimNum(o.Px)} × {o.Sz ?? "-"}",
         });
         return dp;
@@ -158,9 +158,9 @@ public partial class PortraitView : UserControl
 
     UIElement WatchRow(WatchedToken t)
     {
-        var dp = new StackPanel { Orientation = Orientation.Horizontal, Height = 18 };
-        dp.Children.Add(new TextBlock { Text = Format.Symbol(t.InstId), FontSize = 11, FontWeight = FontWeights.SemiBold });
-        dp.Children.Add(new TextBlock { Text = " " + Format.Number(t.Price), FontSize = 11, Foreground = Gray, FontFamily = new FontFamily("Consolas"), Margin = new Thickness(4, 0, 8, 0) });
+        var dp = new StackPanel { Orientation = Orientation.Horizontal, Height = 22 };
+        dp.Children.Add(new TextBlock { Text = Format.Symbol(t.InstId), FontSize = 13, FontWeight = FontWeights.SemiBold });
+        dp.Children.Add(new TextBlock { Text = " " + Format.Number(t.Price), FontSize = 13, Foreground = Gray, FontFamily = new FontFamily("Consolas"), Margin = new Thickness(4, 0, 8, 0) });
         dp.Children.Add(ChangeBadge("2h", t.Change2h));
         dp.Children.Add(ChangeBadge("6h", t.Change6h));
         dp.Children.Add(ChangeBadge("24h", t.Change24h));
@@ -170,10 +170,10 @@ public partial class PortraitView : UserControl
     UIElement ChangeBadge(string label, double? v)
     {
         var sp = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 0, 6, 0) };
-        sp.Children.Add(new TextBlock { Text = label + " ", FontSize = 9, Foreground = Gray });
+        sp.Children.Add(new TextBlock { Text = label + " ", FontSize = 11, Foreground = Gray });
         sp.Children.Add(new TextBlock
         {
-            FontSize = 10, FontFamily = new FontFamily("Consolas"),
+            FontSize = 12, FontFamily = new FontFamily("Consolas"),
             Text = v is { } x ? Format.Percent(x, true) : "—",
             Foreground = v is { } y ? PnlColor(y) : Gray,
         });
@@ -191,7 +191,7 @@ public partial class PortraitView : UserControl
         {
             Background = color, CornerRadius = new CornerRadius(7), Padding = new Thickness(5, 1, 5, 1),
             Margin = new Thickness(4, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center,
-            Child = new TextBlock { Text = label, Foreground = Brushes.White, FontSize = 9, FontWeight = FontWeights.Bold },
+            Child = new TextBlock { Text = label, Foreground = Brushes.White, FontSize = 11, FontWeight = FontWeights.Bold },
         };
     }
 }

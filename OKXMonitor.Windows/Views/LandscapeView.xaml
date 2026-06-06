@@ -7,29 +7,29 @@
         <!-- ROW 1: account glance -->
         <StackPanel Orientation="Horizontal" x:Name="Row1">
             <StackPanel Margin="0,0,12,0">
-                <TextBlock Text="账户权益" Foreground="#999" FontSize="9"/>
-                <TextBlock x:Name="EquityText" Foreground="White" FontSize="14" FontWeight="Bold"/>
-                <TextBlock x:Name="MarginText" Foreground="#999" FontSize="9"/>
+                <TextBlock Text="账户权益" Foreground="#999" FontSize="11"/>
+                <TextBlock x:Name="EquityText" Foreground="White" FontSize="18" FontWeight="Bold"/>
+                <TextBlock x:Name="MarginText" Foreground="#999" FontSize="11"/>
             </StackPanel>
             <StackPanel Margin="0,0,12,0">
-                <TextBlock Text="未实现盈亏" Foreground="#999" FontSize="9"/>
-                <TextBlock x:Name="UplText" FontSize="14" FontWeight="Bold"/>
+                <TextBlock Text="未实现盈亏" Foreground="#999" FontSize="11"/>
+                <TextBlock x:Name="UplText" FontSize="18" FontWeight="Bold"/>
             </StackPanel>
             <Border BorderBrush="#22FFFFFF" BorderThickness="1,0,0,0" Padding="12,0,0,0">
                 <Grid x:Name="PnlGrid">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto" MinWidth="46"/>
-                        <ColumnDefinition Width="Auto" MinWidth="46"/><ColumnDefinition Width="Auto" MinWidth="46"/>
-                        <ColumnDefinition Width="Auto" MinWidth="46"/>
+                        <ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto" MinWidth="64"/>
+                        <ColumnDefinition Width="Auto" MinWidth="64"/><ColumnDefinition Width="Auto" MinWidth="64"/>
+                        <ColumnDefinition Width="Auto" MinWidth="64"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions><RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/></Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="盈利" FontSize="9" Foreground="#999" TextAlignment="Right"/>
-                    <TextBlock Grid.Row="0" Grid.Column="2" Text="亏损" FontSize="9" Foreground="#999" TextAlignment="Right"/>
-                    <TextBlock Grid.Row="0" Grid.Column="3" Text="手续费" FontSize="9" Foreground="#999" TextAlignment="Right"/>
-                    <TextBlock Grid.Row="0" Grid.Column="4" Text="合计" FontSize="9" Foreground="#999" TextAlignment="Right"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="盈利" FontSize="11" Foreground="#999" TextAlignment="Right"/>
+                    <TextBlock Grid.Row="0" Grid.Column="2" Text="亏损" FontSize="11" Foreground="#999" TextAlignment="Right"/>
+                    <TextBlock Grid.Row="0" Grid.Column="3" Text="手续费" FontSize="11" Foreground="#999" TextAlignment="Right"/>
+                    <TextBlock Grid.Row="0" Grid.Column="4" Text="合计" FontSize="11" Foreground="#999" TextAlignment="Right"/>
                 </Grid>
             </Border>
-            <TextBlock x:Name="FeeRateLine" Foreground="#999" FontSize="9" FontFamily="Consolas"
+            <TextBlock x:Name="FeeRateLine" Foreground="#999" FontSize="11" FontFamily="Consolas"
                        VerticalAlignment="Center" Margin="12,0,0,0"/>
         </StackPanel>
 

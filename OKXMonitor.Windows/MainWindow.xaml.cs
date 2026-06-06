@@ -52,7 +52,7 @@ public partial class MainWindow : Window
         {
             SizeToContent = SizeToContent.Height;
             ResizeMode = ResizeMode.NoResize;
-            Width = 340;
+            Width = 380;
             BodyHost.Content = _portrait;
         }
         else
@@ -70,8 +70,8 @@ public partial class MainWindow : Window
         var g = _settings.GeometryFor(kind);
         if (kind == LayoutKind.Landscape)
         {
-            Width = g.Width ?? 720;
-            Height = g.Height ?? 120;
+            Width = g.Width ?? 1440;
+            Height = g.Height ?? 240;
         }
         if (g.Left is { } l && g.Top is { } t) { Left = l; Top = t; EnsureOnScreen(); }
         else { var a = SystemParameters.WorkArea; Left = a.Right - Width - 20; Top = a.Top + 20; }

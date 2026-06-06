@@ -67,7 +67,7 @@ public partial class LandscapeView : UserControl
 
     void Add(int row, int col, string text, Brush color)
     {
-        var tb = new TextBlock { Text = text, Foreground = color, FontSize = 9,
+        var tb = new TextBlock { Text = text, Foreground = color, FontSize = 11,
             FontFamily = new FontFamily("Consolas"), Margin = new Thickness(6, 0, 0, 0),
             TextAlignment = col == 0 ? TextAlignment.Left : TextAlignment.Right };
         Grid.SetRow(tb, row); Grid.SetColumn(tb, col);
@@ -95,11 +95,11 @@ public partial class LandscapeView : UserControl
         var pages = new List<UIElement>();
         for (int i = 0; i < chips.Count; i += perPage)
         {
-            var sp = new StackPanel { Orientation = Orientation.Horizontal, Height = 20 };
+            var sp = new StackPanel { Orientation = Orientation.Horizontal, Height = 26 };
             for (int j = i; j < System.Math.Min(i + perPage, chips.Count); j++) sp.Children.Add(chips[j]);
             pages.Add(sp);
         }
-        if (pages.Count == 0) pages.Add(new TextBlock { Text = "无持仓 / 挂单", Foreground = Gray, FontSize = 10, Height = 20 });
+        if (pages.Count == 0) pages.Add(new TextBlock { Text = "无持仓 / 挂单", Foreground = Gray, FontSize = 12, Height = 26 });
         return pages;
     }
 
@@ -107,23 +107,23 @@ public partial class LandscapeView : UserControl
     {
         double upl = p.UplValue;
         var sp = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 0, 12, 0) };
-        sp.Children.Add(new TextBlock { Text = Format.Symbol(p.InstId), FontSize = 11, FontWeight = FontWeights.SemiBold });
+        sp.Children.Add(new TextBlock { Text = Format.Symbol(p.InstId), FontSize = 13, FontWeight = FontWeights.SemiBold });
         var side = (p.PosSide ?? "").ToLowerInvariant();
         sp.Children.Add(new TextBlock { Text = side == "long" ? " 多" : side == "short" ? " 空" : "",
-            Foreground = side == "long" ? Green : Red, FontSize = 10, Margin = new Thickness(2, 0, 4, 0) });
-        sp.Children.Add(new TextBlock { Text = Format.SignedMoney(upl), Foreground = PnlColor(upl), FontSize = 11, FontFamily = new FontFamily("Consolas") });
+            Foreground = side == "long" ? Green : Red, FontSize = 12, Margin = new Thickness(2, 0, 4, 0) });
+        sp.Children.Add(new TextBlock { Text = Format.SignedMoney(upl), Foreground = PnlColor(upl), FontSize = 13, FontFamily = new FontFamily("Consolas") });
         return sp;
     }
 
     UIElement WatchChip(WatchedToken w)
     {
         var sp = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 0, 12, 0) };
-        sp.Children.Add(new TextBlock { Text = Format.Symbol(w.InstId), FontSize = 11 });
+        sp.Children.Add(new TextBlock { Text = Format.Symbol(w.InstId), FontSize = 13 });
         sp.Children.Add(new TextBlock { Text = " " + (w.Change24h is { } c ? Format.Percent(c, true) : "—"),
-            Foreground = w.Change24h is { } x ? PnlColor(x) : Gray, FontSize = 10, FontFamily = new FontFamily("Consolas") });
+            Foreground = w.Change24h is { } x ? PnlColor(x) : Gray, FontSize = 12, FontFamily = new FontFamily("Consolas") });
         return sp;
     }
 
     UIElement Chip(string text, Brush color) =>
-        new TextBlock { Text = text, Foreground = color, FontSize = 11, Margin = new Thickness(0, 0, 12, 0) };
+        new TextBlock { Text = text, Foreground = color, FontSize = 13, Margin = new Thickness(0, 0, 12, 0) };
 }
