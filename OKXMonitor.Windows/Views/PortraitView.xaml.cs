@@ -5,6 +5,15 @@ using OKXMonitor.Models;
 using OKXMonitor.Services;
 using OKXMonitor.Utils;
 
+// Disambiguate WinForms vs WPF types brought in by UseWindowsForms.
+using Brush = System.Windows.Media.Brush;
+using Brushes = System.Windows.Media.Brushes;
+using Color = System.Windows.Media.Color;
+using FontFamily = System.Windows.Media.FontFamily;
+using HorizontalAlignment = System.Windows.HorizontalAlignment;
+using Orientation = System.Windows.Controls.Orientation;
+using UserControl = System.Windows.Controls.UserControl;
+
 namespace OKXMonitor.Views;
 
 public partial class PortraitView : UserControl

@@ -2,6 +2,9 @@ using System.Windows;
 using System.Windows.Controls;
 using OKXMonitor.Services;
 
+// Disambiguate WinForms vs WPF types brought in by UseWindowsForms.
+using MessageBox = System.Windows.MessageBox;
+
 namespace OKXMonitor.Views;
 
 public partial class SettingsWindow : Window

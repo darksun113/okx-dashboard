@@ -8,6 +8,10 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
+// Disambiguate WinForms vs WPF types brought in by UseWindowsForms.
+using Brushes = System.Windows.Media.Brushes;
+using Orientation = System.Windows.Controls.Orientation;
+
 namespace OKXMonitor.Views.Controls;
 
 /// A vertical pager that shows `RowsPerPage` items per page and auto-advances
@@ -19,7 +23,7 @@ public sealed class Carousel : ContentControl
     readonly StackPanel _dots = new()
     {
         Orientation = Orientation.Horizontal,
-        HorizontalAlignment = HorizontalAlignment.Right,
+        HorizontalAlignment = System.Windows.HorizontalAlignment.Right,
         Margin = new Thickness(0, 2, 2, 0),
     };
     int _page;

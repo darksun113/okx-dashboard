@@ -7,6 +7,11 @@ using System.Windows.Media;
 using OKXMonitor.Interop;
 using OKXMonitor.Services;
 
+// Disambiguate WinForms vs WPF types brought in by UseWindowsForms.
+using Application = System.Windows.Application;
+using Brush = System.Windows.Media.Brush;
+using Color = System.Windows.Media.Color;
+
 namespace OKXMonitor;
 
 public partial class MainWindow : Window
@@ -131,4 +136,10 @@ public partial class MainWindow : Window
     }
 
     void Close_Click(object sender, RoutedEventArgs e) => Application.Current.Shutdown();
+
+    // Public hooks for the tray icon.
+    public void ToggleVisibility() { if (IsVisible) Hide(); else { Show(); Activate(); } }
+    public void ToggleLayoutPublic() => Toggle_Click(this, new RoutedEventArgs());
+    public void RefreshPublic() => _ = _store.RefreshAsync();
+    public void OpenSettingsPublic() => Settings_Click(this, new RoutedEventArgs());
 }
