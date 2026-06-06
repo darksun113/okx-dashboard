@@ -615,6 +615,53 @@ And inside `RequestAsync<T>`:
         resp = await _http.SendAsync(req).ConfigureAwait(false);
 ```
 
+(d) **`OrdersHistoryAsync` + `PaginatedOrdersAsync` must use the no-`begin` paging fix** (ported from `OKXClient.swift` commit 5c9edab — passing OKX's `begin` query param drops orders within the window, making today's wins vanish and 今日 盈利 show 0). The bodies must be exactly:
+```csharp
+    public async Task<List<HistoryOrder>> OrdersHistoryAsync(double beginMs, string instType = "SWAP")
+    {
+        double nowMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        double sevenDaysAgoMs = nowMs - 7d * 86_400 * 1000;
+
+        // Always pull the 7-day real-time endpoint (covers today / this week).
+        var recentTask = PaginatedOrdersAsync("orders-history", instType, oldestNeededMs: beginMs);
+        // Only walk the 3-month archive if we need orders older than 7 days.
+        var archivedTask = beginMs < sevenDaysAgoMs
+            ? PaginatedOrdersAsync("orders-history-archive", instType, oldestNeededMs: beginMs)
+            : Task.FromResult(new List<HistoryOrder>());
+
+        await Task.WhenAll(recentTask, archivedTask).ConfigureAwait(false);
+
+        // Insert archived first, then recent, so the real-time copy wins on duplicate ordId.
+        var byId = new Dictionary<string, HistoryOrder>();
+        foreach (var o in archivedTask.Result) if (o.OrdId is { } id) byId[id] = o;
+        foreach (var o in recentTask.Result) if (o.OrdId is { } id) byId[id] = o;
+        return byId.Values.ToList();
+    }
+
+    /// Pages backward via `after` (ordId) until everything newer than
+    /// `oldestNeededMs` is covered. Intentionally does NOT send OKX's `begin`
+    /// query param (it drops orders within the window).
+    async Task<List<HistoryOrder>> PaginatedOrdersAsync(string endpoint, string instType, double oldestNeededMs)
+    {
+        var all = new List<HistoryOrder>();
+        string? after = null;
+        for (int i = 0; i < 30; i++) // safety cap: 30 × 100 = 3000 orders
+        {
+            var path = $"/api/v5/trade/{endpoint}?instType={instType}&limit=100";
+            if (after is not null) path += $"&after={after}";
+            var page = await RequestAsync<HistoryOrder>(path).ConfigureAwait(false);
+            all.AddRange(page);
+            if (page.Count != 100 || page[^1].OrdId is not { } last) break;
+            double oldestInPage = page
+                .Select(o => o.EventTimeMs).Where(t => t.HasValue).Select(t => t!.Value)
+                .DefaultIfEmpty(double.PositiveInfinity).Min();
+            if (oldestInPage < oldestNeededMs) break;
+            after = last;
+        }
+        return all;
+    }
+```
+
 - [ ] **Step 2: Create the fake handler**
 
 `OKXMonitor.Tests/FakeHttpMessageHandler.cs`:
@@ -660,6 +707,7 @@ public sealed class FakeHttpMessageHandler : HttpMessageHandler
 
 `OKXMonitor.Tests/OkxClientTests.cs`:
 ```csharp
+using System;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -716,6 +764,39 @@ public class OkxClientTests
         Assert.Equal("999", x.Pnl);                  // realtime copy won
         Assert.Contains(orders, o => o.OrdId == "Y"); // archive-only survives
         Assert.Equal(2, orders.Count);
+    }
+
+    [Fact]
+    public async Task OrdersHistory_never_sends_begin_param()
+    {
+        // Regression for commit 5c9edab: OKX's `begin` param drops orders, so we
+        // must paginate by `after` only.
+        var handler = new FakeHttpMessageHandler()
+            .On("orders-history", """{"code":"0","msg":"","data":[]}""");
+        var client = new OkxClient(Creds(), "www.okx.com", new HttpClient(handler));
+
+        await client.OrdersHistoryAsync(0);
+
+        Assert.NotEmpty(handler.Requests);
+        Assert.All(handler.Requests, url => Assert.DoesNotContain("begin=", url));
+    }
+
+    [Fact]
+    public async Task OrdersHistory_stops_after_one_page_when_oldest_below_threshold()
+    {
+        // A full page (100) whose orders are all older than the threshold must NOT
+        // trigger another page fetch — the threshold break covers the window.
+        var rows = string.Join(",", Enumerable.Range(0, 100)
+            .Select(i => "{\"ordId\":\"o" + i + "\",\"pnl\":\"1\",\"fillTime\":\"50\"}"));
+        var json = "{\"code\":\"0\",\"msg\":\"\",\"data\":[" + rows + "]}";
+        var handler = new FakeHttpMessageHandler().On("orders-history", json);
+        var client = new OkxClient(Creds(), "www.okx.com", new HttpClient(handler));
+
+        // begin within 7 days so the archive endpoint is skipped (only 1 endpoint hit).
+        double beginMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - 1 * 86_400_000;
+        await client.OrdersHistoryAsync(beginMs);
+
+        Assert.Single(handler.Requests); // did not keep paging despite a full page
     }
 }
 ```
