@@ -1,7 +1,4 @@
-using System.Globalization;
 using System.Net.Http;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json;
 using OKXMonitor.Models;
 
@@ -20,8 +17,7 @@ public sealed class OkxClient
     /// Hosts surfaced as quick picks in Settings.
     public static readonly string[] KnownHosts = { "www.okx.cab", "www.okx.com", "aws.okx.com" };
 
-    // One shared client; certificate validation is left at the secure default.
-    static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(15) };
+    static readonly HttpClient SharedHttp = new() { Timeout = TimeSpan.FromSeconds(15) };
 
     static readonly JsonSerializerOptions JsonOpts = new()
     {
@@ -30,32 +26,22 @@ public sealed class OkxClient
     };
 
     readonly Credentials _creds;
-    readonly string _host;   // includes scheme, e.g. https://www.okx.cab
+    readonly string _host;        // includes scheme, e.g. https://www.okx.cab
+    readonly HttpClient _http;
 
-    public OkxClient(Credentials creds, string? host)
+    public OkxClient(Credentials creds, string? host, HttpClient? http = null)
     {
         _creds = creds;
         var h = string.IsNullOrWhiteSpace(host) ? DefaultHost : host.Trim();
         _host = "https://" + h;
+        _http = http ?? SharedHttp;
     }
-
-    static string Sign(string secret, string timestamp, string method, string path, string body = "")
-    {
-        var prehash = timestamp + method + path + body;
-        using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secret));
-        var mac = hmac.ComputeHash(Encoding.UTF8.GetBytes(prehash));
-        return Convert.ToBase64String(mac);
-    }
-
-    // ISO-8601 UTC with milliseconds, e.g. 2026-06-06T03:14:15.123Z
-    static string TimestampUtc() =>
-        DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture);
 
     async Task<List<T>> RequestAsync<T>(string path)
     {
         if (!_creds.IsComplete) throw OkxException.MissingCredentials();
-        var timestamp = TimestampUtc();
-        var signature = Sign(_creds.SecretKey, timestamp, "GET", path, "");
+        var timestamp = OkxSigner.TimestampUtc(DateTime.UtcNow);
+        var signature = OkxSigner.Sign(_creds.SecretKey, timestamp, "GET", path, "");
 
         using var req = new HttpRequestMessage(HttpMethod.Get, _host + path);
         req.Headers.TryAddWithoutValidation("OK-ACCESS-KEY", _creds.ApiKey);
@@ -68,7 +54,7 @@ public sealed class OkxClient
         string text;
         try
         {
-            resp = await Http.SendAsync(req).ConfigureAwait(false);
+            resp = await _http.SendAsync(req).ConfigureAwait(false);
             text = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
         }
         catch (Exception e) when (e is HttpRequestException or TaskCanceledException)
