@@ -62,11 +62,11 @@ public sealed class CandleConverter : JsonConverter<Candle>
     public override Candle Read(ref Utf8JsonReader r, Type t, JsonSerializerOptions o)
     {
         if (r.TokenType != JsonTokenType.StartArray) throw new JsonException("candle not an array");
-        r.Read(); // ts
-        r.Read(); // open
-        r.Read(); // high
-        r.Read(); // low
-        var cl = r.GetString();                 // close (index 4)
+        // Reader is on StartArray; the first Read lands on index 0 (ts), then walk
+        // four more to index 4 (close) in the [ts, o, h, l, c, …] tuple.
+        r.Read();                               // -> index 0 (ts)
+        for (int i = 0; i < 4; i++) r.Read();   // -> index 4 (close)
+        var cl = r.GetString();                 // close
         double close = double.TryParse(cl, NumberStyles.Any, CultureInfo.InvariantCulture, out var v) ? v : 0;
         while (r.TokenType != JsonTokenType.EndArray) r.Read();
         return new Candle { Close = close };
