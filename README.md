@@ -153,7 +153,8 @@ docs/WINDOWS_PORT.md  Windows 版接手文档 · Windows port handoff doc
 
 ## 许可 · License
 
-未指定 · TBD (suggest **MIT** for permissive open-source distribution).
+**[MIT](LICENSE)** — 自由使用、修改、再分发,仅需保留版权声明。
+**[MIT](LICENSE)** — free to use, modify, and redistribute; just retain the copyright notice.
 
 ---
 

@@ -15,6 +15,8 @@ DerivedData/
 # Built macOS artifacts (publish via GitHub Releases instead)
 OKXMonitor.app/
 OKXMonitor.dmg
+OKXMonitor-*.dmg
+OKXMonitor-*.dmg.zip
 
 # Generated icon assets (regenerate with ./make-icon.sh)
 AppIcon.icns
