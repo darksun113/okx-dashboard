@@ -20,7 +20,7 @@ public static class TrayIconRenderer
             float size = text.Length <= 4 ? 14f : text.Length <= 6 ? 11f : 9f;
             using var font = new Font("Segoe UI", size, FontStyle.Bold, GraphicsUnit.Pixel);
             using var brush = new SolidBrush(color);
-            var fmt = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
+            using var fmt = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
             g.DrawString(text, font, brush, new RectangleF(0, 0, 32, 32), fmt);
         }
         IntPtr h = bmp.GetHicon();

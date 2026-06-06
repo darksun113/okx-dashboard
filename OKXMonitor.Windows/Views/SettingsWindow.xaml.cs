@@ -20,8 +20,8 @@ public partial class SettingsWindow : Window
 
         var c = CredentialStore.Load();
         ApiKeyBox.Text = c.ApiKey;
-        SecretBox.Text = c.SecretKey;
-        PassphraseBox.Text = c.Passphrase;
+        SecretBox.Password = c.SecretKey;
+        PassphraseBox.Password = c.Passphrase;
         DemoCheck.IsChecked = c.Demo;
         HostBox.Text = string.IsNullOrWhiteSpace(_settings.Host) ? OkxClient.DefaultHost : _settings.Host;
         IntervalSlider.Value = _settings.RefreshInterval;
@@ -41,8 +41,8 @@ public partial class SettingsWindow : Window
     void Save_Click(object sender, RoutedEventArgs e)
     {
         var apiKey = ApiKeyBox.Text.Trim();
-        var secret = SecretBox.Text.Trim();
-        var passphrase = PassphraseBox.Text; // do NOT trim interior; passphrases may contain spaces
+        var secret = SecretBox.Password.Trim();
+        var passphrase = PassphraseBox.Password; // do NOT trim interior; passphrases may contain spaces
         if (apiKey.Length == 0 || secret.Length == 0 || passphrase.Length == 0)
         {
             MessageBox.Show("API Key / Secret / Passphrase 不能为空。", "OKX");

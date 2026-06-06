@@ -45,6 +45,7 @@ public sealed class Store : INotifyPropertyChanged
     public System.Collections.Generic.List<WatchedToken> Watchlist { get; private set; } = new();
 
     System.Collections.Generic.Dictionary<string, double> _ctValCache = new();
+    bool _refreshing;
 
     public void Start()
     {
@@ -80,6 +81,8 @@ public sealed class Store : INotifyPropertyChanged
     public async Task RefreshAsync()
     {
         if (NeedsSetup) return;
+        if (_refreshing) return;
+        _refreshing = true;
         IsLoading = true; Raise(nameof(IsLoading));
         var client = new OkxClient(_creds, _settings.Host);
         try
@@ -134,6 +137,7 @@ public sealed class Store : INotifyPropertyChanged
         }
         finally
         {
+            _refreshing = false;
             IsLoading = false;
             RaiseAll();
         }

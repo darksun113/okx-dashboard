@@ -9,6 +9,7 @@ namespace OKXMonitor.Services;
 public sealed class TrayIcon : IDisposable
 {
     readonly NotifyIcon _icon = new();
+    readonly ContextMenuStrip _menu;
     Icon? _current;
 
     public event Action? ToggleWindowRequested;
@@ -19,14 +20,14 @@ public sealed class TrayIcon : IDisposable
 
     public TrayIcon()
     {
-        var menu = new ContextMenuStrip();
-        menu.Items.Add("显示/隐藏窗口", null, (_, _) => ToggleWindowRequested?.Invoke());
-        menu.Items.Add("切换布局", null, (_, _) => ToggleLayoutRequested?.Invoke());
-        menu.Items.Add("立即刷新", null, (_, _) => RefreshRequested?.Invoke());
-        menu.Items.Add("设置…", null, (_, _) => SettingsRequested?.Invoke());
-        menu.Items.Add(new ToolStripSeparator());
-        menu.Items.Add("退出", null, (_, _) => QuitRequested?.Invoke());
-        _icon.ContextMenuStrip = menu;
+        _menu = new ContextMenuStrip();
+        _menu.Items.Add("显示/隐藏窗口", null, (_, _) => ToggleWindowRequested?.Invoke());
+        _menu.Items.Add("切换布局", null, (_, _) => ToggleLayoutRequested?.Invoke());
+        _menu.Items.Add("立即刷新", null, (_, _) => RefreshRequested?.Invoke());
+        _menu.Items.Add("设置…", null, (_, _) => SettingsRequested?.Invoke());
+        _menu.Items.Add(new ToolStripSeparator());
+        _menu.Items.Add("退出", null, (_, _) => QuitRequested?.Invoke());
+        _icon.ContextMenuStrip = _menu;
         _icon.Visible = true;
         _icon.DoubleClick += (_, _) => ToggleWindowRequested?.Invoke();
         Set(" OKX", Color.Gray, "OKX Monitor");
@@ -56,6 +57,7 @@ public sealed class TrayIcon : IDisposable
     {
         _icon.Visible = false;
         _icon.Dispose();
+        _menu.Dispose();
         _current?.Dispose();
     }
 }

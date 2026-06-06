@@ -38,7 +38,7 @@ public partial class LandscapeView : UserControl
     {
         if (_store is null) return;
         EquityText.Text = Format.Money(_store.Balance?.TotalEq);
-        MarginText.Text = double.TryParse(_store.Balance?.MgnRatio, out var mr) ? "保证金率 " + Format.Percent(mr) : "";
+        MarginText.Text = double.TryParse(_store.Balance?.MgnRatio, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var mr) ? "保证金率 " + Format.Percent(mr) : "";
         UplText.Text = Format.SignedMoney(_store.TotalUpl);
         UplText.Foreground = PnlColor(_store.TotalUpl);
 

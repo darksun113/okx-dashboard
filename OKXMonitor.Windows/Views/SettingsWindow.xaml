@@ -11,9 +11,9 @@
         <TextBlock Text="API Key" FontSize="11" Foreground="#999"/>
         <TextBox x:Name="ApiKeyBox" Margin="0,2,0,8" FontFamily="Consolas"/>
         <TextBlock Text="Secret Key" FontSize="11" Foreground="#999"/>
-        <TextBox x:Name="SecretBox" Margin="0,2,0,8" FontFamily="Consolas"/>
+        <PasswordBox x:Name="SecretBox" Margin="0,2,0,8" FontFamily="Consolas"/>
         <TextBlock Text="Passphrase" FontSize="11" Foreground="#999"/>
-        <TextBox x:Name="PassphraseBox" Margin="0,2,0,8" FontFamily="Consolas"/>
+        <PasswordBox x:Name="PassphraseBox" Margin="0,2,0,8" FontFamily="Consolas"/>
 
         <CheckBox x:Name="DemoCheck" Content="模拟盘 (Demo Trading)" Foreground="#DDD" Margin="0,4"/>
 
