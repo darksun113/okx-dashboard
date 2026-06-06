@@ -1,0 +1,52 @@
+# ────────────────────────────────────────────────────────────
+# OKXMonitor — gitignore
+# Goal: keep the repo source-only. Build outputs, editor caches,
+# OS junk, and the local Claude Code session live outside git.
+# ────────────────────────────────────────────────────────────
+
+# Swift Package Manager / build cache
+.build/
+.swiftpm/
+Package.resolved
+*.xcodeproj/
+*.xcworkspace/xcuserdata/
+DerivedData/
+
+# Built macOS artifacts (publish via GitHub Releases instead)
+OKXMonitor.app/
+OKXMonitor.dmg
+
+# Generated icon assets (regenerate with ./make-icon.sh)
+AppIcon.icns
+AppIcon.iconset/
+icon-master.png
+
+# macOS Finder / spotlight junk
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+Icon?
+
+# Claude Code session storage (chat history, scratch files)
+.claude/
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs & ad-hoc test outputs
+*.log
+
+# Future Windows port (see docs/WINDOWS_PORT.md)
+# Common .NET / Visual Studio artifacts:
+bin/
+obj/
+*.user
+*.suo
+.vs/
+TestResults/
+*.nupkg
