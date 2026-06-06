@@ -14,14 +14,12 @@ public partial class MainWindow : Window
 {
     readonly Store _store;
     readonly AppSettings _settings;
-
-    static readonly Brush Green = new SolidColorBrush(Color.FromRgb(0x34, 0xC7, 0x59));
-    static readonly Brush Red = new SolidColorBrush(Color.FromRgb(0xFF, 0x3B, 0x30));
-    static readonly Brush Gray = new SolidColorBrush(Color.FromRgb(0x99, 0x99, 0x99));
+    readonly Views.PortraitView _portrait = new();
 
     public MainWindow(Store store, AppSettings settings)
     {
         InitializeComponent();
+        BodyHost.Content = _portrait;
         _store = store;
         _settings = settings;
         _store.PropertyChanged += (_, _) => Dispatcher.Invoke(Render);
@@ -74,21 +72,16 @@ public partial class MainWindow : Window
     {
         DemoBadge.Visibility = _store.IsDemo ? Visibility.Visible : Visibility.Collapsed;
         SetupPrompt.Visibility = _store.NeedsSetup ? Visibility.Visible : Visibility.Collapsed;
-        SummaryBlock.Visibility = _store.NeedsSetup ? Visibility.Collapsed : Visibility.Visible;
-
-        EquityText.Text = Format.Money(_store.Balance?.TotalEq);
-        MarginText.Text = double.TryParse(_store.Balance?.MgnRatio, out var mr)
-            ? "保证金率 " + Format.Percent(mr) : "";
-
-        var upl = _store.TotalUpl;
-        UplText.Text = Format.SignedMoney(upl);
-        UplText.Foreground = upl > 0 ? Green : upl < 0 ? Red : Gray;
+        BodyHost.Visibility = _store.NeedsSetup ? Visibility.Collapsed : Visibility.Visible;
+        if (!_store.NeedsSetup) _portrait.Bind(_store);
 
         IntervalText.Text = $"{(int)_store.RefreshInterval}s";
         StatusText.Text = _store.ErrorMessage is { } err ? "⚠ " + err
             : _store.LastUpdated is { } t ? "更新于 " + t.ToString("HH:mm:ss")
             : "等待数据…";
-        StatusText.Foreground = _store.ErrorMessage is null ? Gray : Red;
+        StatusText.Foreground = _store.ErrorMessage is null
+            ? new SolidColorBrush(Color.FromRgb(0x99, 0x99, 0x99))
+            : new SolidColorBrush(Color.FromRgb(0xFF, 0x3B, 0x30));
     }
 
     void Header_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

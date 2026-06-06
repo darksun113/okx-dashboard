@@ -52,18 +52,7 @@
                 <Button Content="打开设置" Click="Settings_Click" HorizontalAlignment="Center" Padding="12,4"/>
             </StackPanel>
 
-            <!-- Summary -->
-            <Grid x:Name="SummaryBlock" Margin="12,10">
-                <StackPanel HorizontalAlignment="Left">
-                    <TextBlock Text="账户权益 (USD)" Foreground="#999" FontSize="11"/>
-                    <TextBlock x:Name="EquityText" Text="—" Foreground="White" FontSize="20" FontWeight="Bold"/>
-                    <TextBlock x:Name="MarginText" Foreground="#999" FontSize="11"/>
-                </StackPanel>
-                <StackPanel HorizontalAlignment="Right">
-                    <TextBlock Text="未实现盈亏" Foreground="#999" FontSize="11" HorizontalAlignment="Right"/>
-                    <TextBlock x:Name="UplText" Text="—" FontSize="20" FontWeight="Bold" HorizontalAlignment="Right"/>
-                </StackPanel>
-            </Grid>
+            <ContentControl x:Name="BodyHost"/>
 
             <!-- Footer -->
             <Border Background="#11FFFFFF" Padding="12,6">
