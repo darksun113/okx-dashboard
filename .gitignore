@@ -33,6 +33,9 @@ Icon?
 # Claude Code session storage (chat history, scratch files)
 .claude/
 
+# Superpowers brainstorm/visual-companion scratch files
+.superpowers/
+
 # Editor / IDE
 .vscode/
 .idea/
