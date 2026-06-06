@@ -3,6 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:ctl="clr-namespace:OKXMonitor.Views.Controls"
              TextElement.Foreground="#DDD">
+    <!-- Viewbox scales the whole strip to fill the window: drag the window bigger
+         and the content (fonts, spacing) grows with it instead of leaving gaps. -->
+    <Viewbox Stretch="Fill">
     <StackPanel Margin="10,6">
         <!-- ROW 1: account glance -->
         <StackPanel Orientation="Horizontal" x:Name="Row1">
@@ -36,4 +39,5 @@
         <!-- ROW 2: positions + orders + watch -->
         <ctl:Carousel x:Name="Row2Carousel" RowsPerPage="1" Margin="0,6,0,0"/>
     </StackPanel>
+    </Viewbox>
 </UserControl>
