@@ -131,15 +131,15 @@ struct OKXClient {
     /// requested window is within 7 days, the archive call is skipped.
     func ordersHistory(instType: String = "SWAP", beginMs: Double) async throws -> [HistoryOrder] {
         let sevenDaysAgoMs = (Date().timeIntervalSince1970 - 7 * 86_400) * 1000
-        // The 7-day endpoint only retains a week of data; passing a `begin`
-        // older than that makes it return nothing, which would drop today's
-        // (real-time) orders. Clamp its window to the last 7 days.
-        let recentBegin = max(beginMs, sevenDaysAgoMs)
 
+        // Always pull the 7-day real-time endpoint (covers today/this week).
         async let recent = paginatedOrders(
-            endpoint: "orders-history", instType: instType, beginMs: recentBegin)
+            endpoint: "orders-history", instType: instType, oldestNeededMs: beginMs)
+
+        // Only walk the 3-month archive if we need orders older than 7 days.
         async let archived: [HistoryOrder] = beginMs < sevenDaysAgoMs
-            ? paginatedOrders(endpoint: "orders-history-archive", instType: instType, beginMs: beginMs)
+            ? paginatedOrders(
+                endpoint: "orders-history-archive", instType: instType, oldestNeededMs: beginMs)
             : []
 
         // Insert archived first, then recent, so the real-time copy wins for any
@@ -151,18 +151,28 @@ struct OKXClient {
     }
 
     /// Pages backward through an orders-history endpoint via the `after` (ordId)
-    /// cursor, 100 per request, starting at `beginMs`.
-    private func paginatedOrders(endpoint: String, instType: String, beginMs: Double) async throws -> [HistoryOrder] {
-        let begin = String(Int64(beginMs))
+    /// cursor until we've covered everything newer than `oldestNeededMs`.
+    ///
+    /// We intentionally do NOT pass OKX's `begin` query parameter: empirically
+    /// it can drop orders within the window (likely because it filters/sorts on
+    /// a different field than expected), causing today's wins to vanish.
+    /// Paginating by `after` (ordId) and stopping when the page's oldest
+    /// `eventTimeMs` falls below `oldestNeededMs` is exhaustive and avoids
+    /// that issue.
+    private func paginatedOrders(endpoint: String, instType: String, oldestNeededMs: Double) async throws -> [HistoryOrder] {
         var all: [HistoryOrder] = []
         var after: String?
-        // Safety cap: 30 pages × 100 = 3000 orders for the window.
+        // Safety cap: 30 pages × 100 = 3000 orders.
         for _ in 0..<30 {
-            var path = "/api/v5/trade/\(endpoint)?instType=\(instType)&limit=100&begin=\(begin)"
+            var path = "/api/v5/trade/\(endpoint)?instType=\(instType)&limit=100"
             if let after { path += "&after=\(after)" }
             let page = try await request(path: path, as: HistoryOrder.self)
             all.append(contentsOf: page)
+            // Stop if the server has nothing more to give, OR if we've paged
+            // past the oldest order we care about.
             guard page.count == 100, let last = page.last?.ordId else { break }
+            let oldestInPage = page.compactMap { $0.eventTimeMs }.min() ?? .infinity
+            if oldestInPage < oldestNeededMs { break }
             after = last
         }
         return all
