@@ -21,4 +21,8 @@
     <PackageReference Include="Meziantou.Framework.Win32.CredentialManager" Version="1.4.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="OKXMonitor.Tests" />
+  </ItemGroup>
+
 </Project>
